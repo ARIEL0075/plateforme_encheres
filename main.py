@@ -1,7 +1,7 @@
 from src.models.utilisateur import Utilisateur
 from src.models.objet import Objet
 from src.models.enchere import Enchere
-
+from src.database.repository import Repository
 def demarrer_simulation():
     print("--- Démarrage de la Plateforme d'Enchères ---")
     
