@@ -22,3 +22,15 @@ class Repository:
         )
         conn.commit()
         conn.close()
+        
+    @staticmethod
+    def update_objet(objet):
+        conn = connect_db()
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE objets SET prix_actuel = ?, etat = ? WHERE id = ?",
+            (objet.prix_actuel, objet.etat, objet.id)
+        )
+        conn.commit()
+        conn.close()
+        print(f"Objet '{objet.nom}' mis à jour en base.")
