@@ -1,50 +1,41 @@
 import sqlite3
-import os
 
-def initialiser_db():
+# Nom du fichier base de données
+DB_NAME = "plateforme_encheres.db"
 
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.join(base_dir, 'encheres.db')
+def connect_db():
+    """Crée une connexion à la base de données."""
+    conn = sqlite3.connect(DB_NAME)
+    return conn
+
+def init_db():
+    """Initialise les tables de la base de données."""
+    conn = connect_db()
+    cursor = conn.cursor()
     
-    connexion = sqlite3.connect(db_path)
-    curseur = connexion.cursor()
-
-    curseur.execute('''
+    # Création de la table Utilisateurs
+    cursor.execute('''
         CREATE TABLE IF NOT EXISTS utilisateurs (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id INTEGER PRIMARY KEY,
             nom TEXT NOT NULL,
-            solde REAL
-        )
-    ''')
-
-  
-    curseur.execute('''
-        CREATE TABLE IF NOT EXISTS objets (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nom TEXT NOT NULL,
-            prix_initial REAL,
-            prix_actuel REAL,
-            etat TEXT
-        )
-    ''')
-
-  
-    curseur.execute('''
-        CREATE TABLE IF NOT EXISTS encheres (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            utilisateur_id INTEGER,
-            objet_id INTEGER,
-            montant REAL,
-            date TIMESTAMP,
-            FOREIGN KEY(utilisateur_id) REFERENCES utilisateurs(id),
-            FOREIGN KEY(objet_id) REFERENCES objets(id)
+            solde REAL NOT NULL
         )
     ''')
     
-    connexion.commit()
-    connexion.close()
-print(f"Base de données créée à cet emplacement : {os.path.abspath(db_path)}")
-
+    # Création de la table Objets
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS objets (
+            id INTEGER PRIMARY KEY,
+            nom TEXT NOT NULL,
+            description TEXT,
+            prix_actuel REAL NOT NULL,
+            etat TEXT NOT NULl
+        )
+    ''')
+    
+    conn.commit()
+    conn.close()
+    print("Base de données initialisée avec succès.")
 
 if __name__ == "__main__":
-    initialiser_db()
+    init_db()
