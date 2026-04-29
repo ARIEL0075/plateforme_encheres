@@ -20,8 +20,7 @@ def ajouter():
 
     if nom and prix:
         # 2. On crée un nouvel objet (on génère un ID aléatoire pour le test)
-        nouvel_id = random.randint(1000, 9999)
-        nouvel_objet = Objet(id=nouvel_id, nom=nom, description=description, prix_depart=float(prix))
+        nouvel_objet = Objet(nom=nom, description=description, prix_depart=float(prix))
         
         # 3. On utilise ton Repository pour l'enregistrer dans la base .db
         Repository.save_objet(nouvel_objet)
