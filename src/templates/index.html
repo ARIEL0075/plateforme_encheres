@@ -24,5 +24,12 @@
             {% endfor %}
         </div>
     </div>
+    <form action="/ajouter" method="POST">
+    <input type="text" name="nom" placeholder="Nom de l'objet" required>
+    <input type="text" name="description" placeholder="Description">
+    <input type="number" name="prix" placeholder="Prix de départ" required>
+    <button type="submit">Mettre en vente</button>
+</form>
+
 </body>
 </html>
