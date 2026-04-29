@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Vision - Enchères</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Plateforme d'Enchères - Dev Vision</h1>
+        <p style="text-align: center;">Espace d'échange pour les développeurs de Parakou</p>
+        
+        <div class="inventory">
+            {% for objet in objets %}
+            <div class="objet-card">
+                <h3>{{ objet['nom'] }}</h3>
+                <p>{{ objet['description'] }}</p>
+                <p class="price">Prix actuel : {{ objet['prix_actuel'] }} CFA</p>
+                <span class="status">État : {{ objet['etat'] }}</span>
+            </div>
+            {% else %}
+            <p style="text-align: center; color: #666;">Aucun objet n'est en vente pour le moment.</p>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
