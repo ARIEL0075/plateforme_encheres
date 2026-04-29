@@ -1,3 +1,4 @@
+import sqlite3
 from src.database.db import connect_db
 class Repository:
     
@@ -77,15 +78,15 @@ class Repository:
         finally:
             if conn:
                 conn.close()
-@staticmethod
-def get_all_objets():
-    conn = None
-    try:
-        conn = connect_db()
-        conn.row_factory = sqlite3.Row # Permet d'accéder aux colonnes par nom
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM objets")
-        return cursor.fetchall()
-    finally:
-        if conn:
+    @staticmethod
+    def get_all_objets():
+        conn = None
+        try:
+         conn = connect_db()
+         conn.row_factory = sqlite3.Row # Permet d'accéder aux colonnes par nom
+         cursor = conn.cursor()
+         cursor.execute("SELECT * FROM objets")
+         return cursor.fetchall()
+        finally:
+         if conn:
             conn.close()
