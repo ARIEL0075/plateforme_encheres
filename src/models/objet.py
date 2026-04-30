@@ -5,7 +5,7 @@ class Etat(Enum):
     TERMINE = "TERMINE"
 
 class Objet:
-    def __init__(self, id_objet, nom, description, prix_depart):
+    def __init__(self, id_objet, nom, description, prix_depart, prix_actuel=None, etat=None):
         if prix_depart < 0:
             raise ValueError("Le prix initial doit être positif")
 
@@ -13,8 +13,8 @@ class Objet:
         self.nom = nom
         self.description = description
         self.prix_depart = prix_depart
-        self.prix_actuel = prix_depart
-        self.etat = Etat.EN_COURS
+        self.prix_actuel = prix_actuel if prix_actuel is not None else prix_depart
+        self.etat = etat if etat else Etat.EN_COURS
 
 
     def mettre_a_jour_prix(self, nouveau_prix):

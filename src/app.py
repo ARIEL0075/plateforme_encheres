@@ -14,6 +14,7 @@ def index():
 @app.route('/ajouter', methods=['POST'])
 def ajouter():
     # 1. On récupère les données envoyées par le formulaire HTML
+    print("Tentative d'ajout recue")
     nom = request.form.get('nom')
     description = request.form.get('description')
     prix = request.form.get('prix')

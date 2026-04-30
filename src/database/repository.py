@@ -1,92 +1,93 @@
 import sqlite3
+import logging
 from src.database.db import connect_db
+from src.models.objet import Objet, Etat
+
 class Repository:
-    
+
     @staticmethod
     def save_objet(objet):
-        conn = None
         try:
-            conn = connect_db()
-            cursor = conn.cursor()
-            cursor.execute(
-                "INSERT OR REPLACE INTO objets (id, nom, description, prix_actuel, etat) VALUES (?, ?, ?, ?, ?)",
-                (objet.id, objet.nom, objet.description, objet.prix_actuel, objet.etat)
-            )
-            conn.commit()
-            print(f"Objet '{objet.nom}' mis à jour ou créé en base.")
-        except Exception as e:
-            if conn:
-                conn.rollback()
-            print(f"Erreur lors de la sauvegarde de l'objet : {e}")
-        finally:
-            if conn:
-                conn.close()
+            with connect_db() as conn:
+                cursor = conn.cursor()
 
-    @staticmethod
-    def save_utilisateur(utilisateur):
-        conn = None
-        try:
-            conn = connect_db()
-            cursor = conn.cursor()
-            cursor.execute(
-                "INSERT OR REPLACE INTO utilisateurs (id, nom, solde) VALUES (?, ?, ?)",
-                (utilisateur.id, utilisateur.nom, utilisateur.solde)
-            )
-            conn.commit()
-            print(f"Utilisateur '{utilisateur.nom}' mis à jour ou créé en base.")
-        except Exception as e:
-            if conn:
-                conn.rollback()
-            print(f"Erreur lors de la sauvegarde de l'utilisateur : {e}")
-        finally:
-            if conn:
-                conn.close()
+                etat_value = objet.etat.value if objet.etat else None
 
+                cursor.execute("""
+                    INSERT INTO objets (id, nom, description, prix_actuel, etat)
+                    VALUES (?, ?, ?, ?, ?)
+                    ON CONFLICT(id) DO UPDATE SET
+                        nom=excluded.nom,
+                        description=excluded.description,
+                        prix_actuel=excluded.prix_actuel,
+                        etat=excluded.etat
+                """, (objet.id, objet.nom, objet.description, objet.prix_actuel, etat_value))
+
+        except sqlite3.Error as e:
+            logging.error(f"Erreur sauvegarde objet : {e}")
     @staticmethod
     def update_objet(objet):
-        conn = None
         try:
-            conn = connect_db()
+         with connect_db() as conn:
             cursor = conn.cursor()
-            cursor.execute(
-                "UPDATE objets SET prix_actuel = ?, etat = ? WHERE id = ?",
-                (objet.prix_actuel, objet.etat, objet.id)
-            )
-            conn.commit()
-            print(f"Objet '{objet.nom}' mis à jour en base.")
-        except Exception as e:
-            if conn:
-                conn.rollback()
-            print(f"Erreur lors de la mise à jour de l'objet : {e}")
-        finally:
-            if conn:
-                conn.close()
+
+            etat_value = objet.etat.value if objet.etat else None
+
+            cursor.execute("""
+                UPDATE objets
+                SET nom = ?,
+                    description = ?,
+                    prix_actuel = ?,
+                    etat = ?
+                WHERE id = ?
+            """, (
+                objet.nom,
+                objet.description,
+                objet.prix_actuel,
+                etat_value,
+                objet.id
+            ))
+
+        except sqlite3.Error as e:
+            logging.error(f"Erreur modification objet : {e}")       
 
     @staticmethod
     def delete_objet(objet_id):
-        conn = None
         try:
-            conn = connect_db()
+         with connect_db() as conn:
             cursor = conn.cursor()
-            cursor.execute("DELETE FROM objets WHERE id = ?", (objet_id,))
-            conn.commit()
-            print(f"Objet avec ID {objet_id} supprimé.")
-        except Exception as e:
-            if conn:
-                conn.rollback()
-            print(f"Erreur lors de la suppression de l'objet : {e}")
-        finally:
-            if conn:
-                conn.close()
+
+            cursor.execute("""
+                DELETE FROM objets
+                WHERE id = ?
+            """, (objet_id,))
+
+        except sqlite3.Error as e:
+            logging.error(f"Erreur suppression objet : {e}")       
+
+
     @staticmethod
     def get_all_objets():
-        conn = None
         try:
-         conn = connect_db()
-         conn.row_factory = sqlite3.Row # Permet d'accéder aux colonnes par nom
-         cursor = conn.cursor()
-         cursor.execute("SELECT * FROM objets")
-         return cursor.fetchall()
-        finally:
-         if conn:
-            conn.close()
+            with connect_db() as conn:
+                conn.row_factory = sqlite3.Row
+                cursor = conn.cursor()
+                cursor.execute("SELECT * FROM objets")
+
+                rows = cursor.fetchall()
+
+                return [
+                    Objet(
+                        id_objet=row['id'],
+                        nom=row['nom'],
+                        description=row['description'],
+                        prix_depart=row['prix_actuel'],  # à améliorer plus tard
+                        prix_actuel=row['prix_actuel'],
+                        etat=Etat(row['etat']) if row['etat'] else None
+                    )
+                    for row in rows
+                ]
+
+        except sqlite3.Error as e:
+            logging.error(f"Erreur récupération : {e}")
+            return []
