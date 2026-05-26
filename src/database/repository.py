@@ -53,18 +53,12 @@ class Repository:
 
     @staticmethod
     def delete_objet(objet_id):
-        try:
-         with connect_db() as conn:
+     try:
+        with connect_db() as conn:
             cursor = conn.cursor()
-
-            cursor.execute("""
-                DELETE FROM objets
-                WHERE id = ?
-            """, (objet_id,))
-
-        except sqlite3.Error as e:
-            logging.error(f"Erreur suppression objet : {e}")       
-
+            cursor.execute("DELETE FROM objets WHERE id = ?", (objet_id,))
+     except sqlite3.Error as e:
+        logging.error(f"Erreur suppression objet : {e}")
 
     @staticmethod
     def get_all_objets():

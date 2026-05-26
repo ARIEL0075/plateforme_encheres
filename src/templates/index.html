@@ -28,8 +28,11 @@
                             <a href="/modifier/{{ objet.id_objet }}" class="btn-modifier">Modifier</a>
                             
                             <form action="/supprimer/{{ objet.id_objet }}" method="POST" style="display:inline;">
-                                <button type="submit" class="btn-supprimer" onclick="return confirm('Supprimer cet objet ?')">
-                                    Supprimer
+    <button type="submit" class="btn-supprimer"
+        onclick="return confirm('Supprimer cet objet ?')">
+        Supprimer
+    </button>
+</form>
                                 </button>
                             </form>
                         </div>
