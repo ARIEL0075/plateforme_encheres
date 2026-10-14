@@ -2,27 +2,34 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Modifier un objet</title>
+    <title>Modifier l'annonce - {{ objet.nom }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+    <div class="container">
+        <h2>Modifier l'objet : {{ objet.nom }}</h2>
 
-    <h2>Modifier l'objet</h2>
+        <form action="/modifier/{{ objet.id }}" method="POST" class="add-form">
+            <label>Nom de l'objet :</label>
+            <input type="text" name="nom" value="{{ objet.nom }}" required>
 
-    <form method="POST">
-        <input type="text" name="nom" value="{{ objet.nom }}" required>
-        <br><br>
+            <label>Description :</label>
+            <textarea name="description">{{ objet.description }}</textarea>
 
-        <input type="text" name="description" value="{{ objet.description }}">
-        <br><br>
+            <label>Prix actuel (€) :</label>
+            <input type="number" name="prix" step="0.01" value="{{ objet.prix_actuel }}" required>
 
-        <input type="number" name="prix" value="{{ objet.prix_actuel }}" required>
-        <br><br>
+            <label>Statut de la vente :</label>
+            <select name="etat">
+                <option value="EN_COURS" {% if objet.etat.value == 'EN_COURS' %}selected{% endif %}>En cours</option>
+                <option value="TERMINE" {% if objet.etat.value == 'TERMINE' %}selected{% endif %}>Terminé</option>
+            </select>
 
-        <button type="submit">Enregistrer modification</button>
-    </form>
-
-    <br>
-    <a href="{{ url_for('index') }}">Retour</a>
-
+            <div style="margin-top: 20px;">
+                <button type="submit" class="btn-submit">Enregistrer les modifications</button>
+                <a href="{{ url_for('index') }}" class="btn-modifier" style="background-color: #666;">Annuler</a>
+            </div>
+        </form>
+    </div>
 </body>
 </html>

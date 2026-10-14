@@ -4,10 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plateforme d'Enchères - Dev Vision</title>
-    <!-- On lie le fichier CSS pour que ce soit joli -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
 <body>
+    <nav class="auth-nav">
+        <div class="container">
+            {% if session.user_nom %}
+                <div class="user-info">
+                    <span>Bienvenue, <strong>{{ session.user_nom }}</strong></span>
+                    <span class="wallet">💰 Solde : {{ session.user_solde }} €</span>
+                    <a href="{{ url_for('deconnexion') }}" class="btn-logout">Déconnexion</a>
+                </div>
+            {% else %}
+                <div class="auth-links">
+                    <a href="{{ url_for('connexion') }}">Connexion</a>
+                    <a href="{{ url_for('inscription') }}">Inscription</a>
+                </div>
+            {% endif %}
+        </div>
+    </nav>
+
     <div class="container">
         <header>
             <h1>Plateforme d'Enchères - Dev Vision</h1>
@@ -16,43 +33,51 @@
 
         <main>
             <div class="inventory">
-                <!-- Boucle pour afficher chaque objet de la base de données -->
                 {% for objet in objets %}
                     <div class="objet-card">
                         <h3>{{ objet.nom }}</h3>
                         <p>{{ objet.description }}</p>
-                        <p class="price">Prix de départ : <strong>{{ objet.prix_depart }} €</strong></p>
-                        
-                        <!-- BLOC DES BOUTONS (Modifier et Supprimer) -->
+                        <p class="price">Prix actuel : <strong>{{ objet.prix_actuel }} €</strong></p>
+
+                         <p class="bidder">
+    🔥 Dernière enchère : 
+    <span class="badge">{{ objet.nom_gagnant }}</span>
+</p>
                         <div class="actions">
-                            <a href="/modifier/{{ objet.id_objet }}" class="btn-modifier">Modifier</a>
-                            
-                            <form action="/supprimer/{{ objet.id_objet }}" method="POST" style="display:inline;">
-    <button type="submit" class="btn-supprimer"
-        onclick="return confirm('Supprimer cet objet ?')">
-        Supprimer
-    </button>
-</form>
+                            {% if session.user_id %}
+                            <form action="/encherir/{{ objet.id }}" method="POST" class="bid-form">
+                          <input type="number" name="montant" step="0.01" min="{{ objet.prix_actuel + 0.01 }}" value="{{ objet.prix_actuel + 1 }}" required>
+                                <button type="submit" class="btn-bid">Miser</button>
+                            </form>
+                            {% endif %}
+
+                            <hr>
+                            <a href="/modifier/{{ objet.id }}" class="btn-modifier">Modifier</a>
+
+                            <form action="/supprimer/{{ objet.id }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn-supprimer" onclick="return confirm('Supprimer cet objet ?')">
+                                    Supprimer
                                 </button>
                             </form>
-                        </div>
-                    </div>
+                        </div> 
+                    </div> 
                 {% else %}
-                    <!-- Message si la base de données est vide -->
-                    <p class="empty-msg">Aucun objet n'est en vente pour le moment.</p>
+                    <p>Aucun objet n'est en vente pour le moment.</p>
                 {% endfor %}
-            </div>
-
+            </div> 
+            
             <hr>
 
             <section class="form-section">
                 <h2>Mettre un objet en vente</h2>
+                
                 <form action="/ajouter" method="POST" class="add-form">
                     <div class="form-group">
                         <input type="text" name="nom" placeholder="Nom de l'objet" required>
                         <input type="text" name="description" placeholder="Description de l'objet">
-                        <input type="number" name="prix" placeholder="Prix de départ (€)" required>
+                        <input type="number" name="prix" step="0.01" placeholder="Prix de départ (€)" required>
                     </div>
+                    
                     <button type="submit" class="btn-submit">Ajouter l'annonce</button>
                 </form>
             </section>

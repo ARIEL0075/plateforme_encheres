@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Inscription - Dev Vision</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Créer un compte</h2>
+        <form action="/inscription" method="POST" class="add-form">
+            <input type="text" name="nom" placeholder="Votre nom complet" required>
+            <br><br>
+            <input type="email" name="email" placeholder="Adresse email" required>
+            <br><br>
+            <input type="password" name="password" placeholder="Mot de passe" required>
+            <br><br>
+            <button type="submit" class="btn-submit">S'inscrire</button>
+        </form>
+        <p>Déjà un compte ? <a href="{{ url_for('connexion') }}">Connectez-vous ici</a></p>
+    </div>
+</body>
+</html>
